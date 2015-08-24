@@ -193,12 +193,19 @@ function affwp_delete_referral( $referral ) {
 	return false;
 }
 
-function affwp_calc_referral_amount( $amount = '', $affiliate_id = 0, $reference = 0, $rate = '', $product_id = 0 ) {
+function affwp_calc_referral_amount( $amount = '', $affiliate_id = 0, $reference = 0, $rate = '', $product_id = 0, $type = '' ) {
 
 	// If the affiliate has a custom rate set, use it. If no rate is specified, use the fallback
 	$rate = affwp_get_affiliate_rate( $affiliate_id, false, $rate );
 
-	if( 'percentage' == affwp_get_affiliate_rate_type( $affiliate_id ) ) {
+	if( empty( $type ) ) {
+
+		// If no rate type is given, use the default
+		$type = affwp_get_affiliate_rate_type( $affiliate_id );
+
+	}
+
+	if( 'percentage' == $type ) {
 
 		$referral_amount = round( $amount * $rate, 2 );
 
@@ -212,7 +219,7 @@ function affwp_calc_referral_amount( $amount = '', $affiliate_id = 0, $reference
 		$referral_amount = 0;
 	}
 
-	return apply_filters( 'affwp_calc_referral_amount', $referral_amount, $affiliate_id, $amount, $reference, $product_id );
+	return apply_filters( 'affwp_calc_referral_amount', $referral_amount, $affiliate_id, $amount, $reference, $product_id, $type );
 }
 
 function affwp_count_referrals( $affiliate_id = 0, $status = array(), $date = array() ) {
