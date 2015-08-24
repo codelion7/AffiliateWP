@@ -228,11 +228,12 @@ abstract class Affiliate_WP_Base {
 	public function calculate_referral_amount( $base_amount = '', $reference = '', $product_id = 0 ) {
 
 		$rate = '';
+		$type = '';
 
 		if( ! empty( $product_id ) ) {
 
 			$rate = $this->get_product_rate( $product_id, $args = array( 'reference' => $reference ) );
-			$type = affwp_get_affiliate_rate_type( $this->affiliate_id );
+			$type = $this->get_product_rate_type( $product_id, $args = array( 'reference' => $reference ) );
 
 			if ( 'percentage' == $type ) {
 
@@ -247,7 +248,7 @@ abstract class Affiliate_WP_Base {
 
 		}
 
-		$amount = affwp_calc_referral_amount( $base_amount, $this->affiliate_id, $reference, $rate, $product_id );
+		$amount = affwp_calc_referral_amount( $base_amount, $this->affiliate_id, $reference, $rate, $product_id, $type );
 
 		return $amount;
 
@@ -270,6 +271,27 @@ abstract class Affiliate_WP_Base {
 		}
 
 		return apply_filters( 'affwp_get_product_rate', (float) $rate, $product_id, $args, $this->affiliate_id, $this->context );
+
+	}
+
+	/**
+	 * Retrieves the rate type for a specific product
+	 *
+	 * @access  public
+	 * @since   1.7
+	 * @return  string
+	*/
+	public function get_product_rate_type( $product_id = 0, $args = array() ) {
+
+		$type = get_post_meta( $product_id, '_affwp_' . $this->context . '_product_rate_type', true );
+		
+		if( empty( $type ) ) {
+
+			$type = affwp_get_affiliate_rate( $this->affiliate_id );
+
+		}
+
+		return apply_filters( 'affwp_get_product_rate_type', (string) $type, $product_id, $args, $this->affiliate_id, $this->context );
 
 	}
 
