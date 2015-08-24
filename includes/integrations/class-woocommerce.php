@@ -400,6 +400,14 @@ class Affiliate_WP_WooCommerce extends Affiliate_WP_Base {
 			'desc_tip'    => true,
 			'description' => __( 'These settings will be used to calculate affiliate earnings per-sale. Leave blank to use default affiliate rates.', 'affiliate-wp' )
 		) );
+		woocommerce_wp_select( array(
+			'id' => '_affwp_woocommerce_product_rate_type',
+			'label' => __('Rate Type', 'affiliate-wp'),
+			'options' => array(
+				'percentage' => __('Percentage (%)', 'affiliate-wp'),
+				'flat' => __('Flat USD', 'affiliate-wp')
+			)
+		) );
 		woocommerce_wp_checkbox( array( 
 			'id'          => '_affwp_woocommerce_referrals_disabled',
 			'label'       => __( 'Disable referrals', 'affiliate-wp' ),
@@ -454,6 +462,17 @@ class Affiliate_WP_WooCommerce extends Affiliate_WP_Base {
 
 		}
 
+		if( ! empty( $_POST['_affwp_' . $this->context . '_product_rate_type'] ) ) {
+
+			$type = sanitize_text_field( $_POST['_affwp_' . $this->context . '_product_rate_type'] );
+			update_post_meta( $post_id, '_affwp_' . $this->context . '_product_rate_type', $type );
+
+		} else {
+
+			delete_post_meta( $post_id, '_affwp_' . $this->context . '_product_rate_type' );
+
+		}
+		
 		if( isset( $_POST['_affwp_' . $this->context . '_referrals_disabled'] ) ) {
 
 			update_post_meta( $post_id, '_affwp_' . $this->context . '_referrals_disabled', 1 );
